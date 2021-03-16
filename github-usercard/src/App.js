@@ -1,42 +1,54 @@
 import React from 'react';
-//import UserForm from './components/usercardForm';
 import axios from 'axios';
+import { Container } from './styles';
+
 
 class App extends React.Component {
   constructor() {
     super();
       this.state = {
         users: [],
-        followers: ''  
+        followers: []  
       };
   }
   
   componentDidMount() {
     axios.get("https://api.github.com/users/teresafranxman97")
       .then(res => {
-        console.log(res.data)
         this.setState({ 
           ...this.state,
           users: res.data
-        })
+        });
+
+        return axios.get("https://api.github.com/users/teresafranxman97/followers")
       })
+
+      .then(response => {
+        console.log(response.data)
+        this.setState({
+          ...this.state,
+          followers: response.data
+        });
+      })
+
       .catch(err => console.log('error: ', err))
+
   }
 
 
   render() {
     return (
-      <div className="App">
-        <h1>hello</h1>
-        {this.state.users.map(user => {
-          return (
-            <h1>{user.name}</h1>
-          )
-        })}
-
-
-        {/* <UserForm users={this.state.users} /> */}
-      </div>
+      <Container className="App">
+        <h1>Welcome</h1>
+        <div className="content">
+          <p>{this.state.users.name}</p>
+          <p>{this.state.users.location}</p>
+          <p>{this.state.followers.map(follower => {
+            return <p>Followers: {follower.login}</p>
+          })}
+          </p>
+        </div>
+      </Container>
     )
   }
 }
